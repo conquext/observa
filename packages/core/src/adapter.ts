@@ -14,7 +14,7 @@ export function defineAdapter(config: {
   };
 }
 
-function defaultStreamExtractor(stream: AsyncIterable<unknown>): TrackedStream<unknown> {
+function defaultStreamExtractor(_stream: AsyncIterable<unknown>): TrackedStream<unknown> {
   throw new Error('Streaming not supported by this adapter. Implement extractStreamUsage.');
 }
 
@@ -48,16 +48,18 @@ export function createTrackedStream<T>(
     getUsage(): Promise<ExtractedUsage> {
       if (done && usage) return Promise.resolve(usage);
       return new Promise((resolve, reject) => {
-        const check = setInterval(() => {
-          if (done && usage) {
-            clearInterval(check);
-            resolve(usage);
-          }
-        }, 10);
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           clearInterval(check);
           reject(new Error('Stream usage not available — stream may not have been fully consumed'));
         }, 30000);
+
+        const check = setInterval(() => {
+          if (done && usage) {
+            clearInterval(check);
+            clearTimeout(timeoutId);
+            resolve(usage);
+          }
+        }, 10);
       });
     },
   });

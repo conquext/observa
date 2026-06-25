@@ -9,11 +9,21 @@ export interface ClickHouseConfig {
 
 export class ClickHouseBackend implements StorageBackend {
   private client: unknown;
+  private clientPromise: Promise<void> | null = null;
   private readonly database: string;
+  private readonly config: ClickHouseConfig;
 
   constructor(config: ClickHouseConfig) {
     this.database = config.database ?? 'observatory';
-    this.initClient(config);
+    this.config = config;
+  }
+
+  private async ensureClient(): Promise<void> {
+    if (this.client) return;
+    if (!this.clientPromise) {
+      this.clientPromise = this.initClient(this.config);
+    }
+    await this.clientPromise;
   }
 
   private async initClient(config: ClickHouseConfig): Promise<void> {
@@ -55,6 +65,7 @@ export class ClickHouseBackend implements StorageBackend {
   }
 
   async write(events: UsageEvent[]): Promise<void> {
+    await this.ensureClient();
     const client = this.client as { insert: (params: unknown) => Promise<void> };
     const rows = events.map(ClickHouseBackend.eventToRow);
 
@@ -66,11 +77,12 @@ export class ClickHouseBackend implements StorageBackend {
   }
 
   async query(_query: UsageQuery): Promise<UsageEvent[]> {
-    // ClickHouse query implementation — similar to PG with ClickHouse SQL syntax
-    return [];
+    await this.ensureClient();
+    throw new Error('query() is not yet implemented for ClickHouseBackend');
   }
 
   async close(): Promise<void> {
+    await this.ensureClient();
     const client = this.client as { close: () => Promise<void> };
     if (client) await client.close();
   }

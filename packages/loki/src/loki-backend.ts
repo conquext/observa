@@ -47,12 +47,12 @@ export class LokiBackend implements StorageBackend {
   }
 
   async query(_query: UsageQuery): Promise<UsageEvent[]> {
-    // Loki query via LogQL is complex — budget engine uses in-memory accumulator instead.
-    // This is a minimal implementation for the StorageBackend interface.
-    return [];
+    throw new Error('query() is not yet implemented for LokiBackend');
   }
 
-  async close(): Promise<void> {}
+  async close(): Promise<void> {
+    // No-op: Loki backend uses stateless HTTP via fetch, no persistent connections to close
+  }
 
   private eventToStream(event: UsageEvent): LokiStream {
     // Low-cardinality fields → labels

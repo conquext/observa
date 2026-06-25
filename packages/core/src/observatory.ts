@@ -121,8 +121,14 @@ export class Observatory {
         }
 
         // Handle nested objects (e.g., openai.chat.completions.create)
+        // Only proxy if this property is a prefix of at least one instrumented method
         if (typeof prop === 'string' && typeof value === 'object' && value !== null) {
-          return new Proxy(value as object, makeNestedHandler(obs, adapter, prop));
+          const hasMatchingMethod = adapter.instrumentedMethods.some(
+            m => m === prop || m.startsWith(`${prop}.`)
+          );
+          if (hasMatchingMethod) {
+            return new Proxy(value as object, makeNestedHandler(obs, adapter, prop));
+          }
         }
 
         return value;
@@ -169,8 +175,14 @@ function makeNestedHandler(obs: Observatory, adapter: ProviderAdapter, parentPat
         };
       }
 
-      if (typeof value === 'object' && value !== null) {
-        return new Proxy(value as object, makeNestedHandler(obs, adapter, fullPath));
+      // Only proxy if this property is a prefix of at least one instrumented method
+      if (typeof prop === 'string' && typeof value === 'object' && value !== null) {
+        const hasMatchingMethod = adapter.instrumentedMethods.some(
+          m => m === fullPath || m.startsWith(`${fullPath}.`)
+        );
+        if (hasMatchingMethod) {
+          return new Proxy(value as object, makeNestedHandler(obs, adapter, fullPath));
+        }
       }
 
       return value;
