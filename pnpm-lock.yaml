@@ -35,16 +35,16 @@ importers:
       '@anthropic-ai/sdk':
         specifier: '>=0.30.0'
         version: 0.106.0(zod@3.25.76)
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
 
   packages/azure-openai:
     dependencies:
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
-      '@conquext/openai':
+      '@conquext/observa-openai':
         specifier: workspace:*
         version: link:../openai
 
@@ -53,13 +53,13 @@ importers:
       '@aws-sdk/client-bedrock-runtime':
         specifier: '>=3.0.0'
         version: 3.1075.0
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
 
   packages/cli:
     dependencies:
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
       commander:
@@ -71,7 +71,7 @@ importers:
       '@clickhouse/client':
         specifier: '>=1.0.0'
         version: 1.22.0
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
 
@@ -86,7 +86,7 @@ importers:
 
   packages/google:
     dependencies:
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
       '@google/generative-ai':
@@ -95,13 +95,13 @@ importers:
 
   packages/loki:
     dependencies:
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
 
   packages/openai:
     dependencies:
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
       openai:
@@ -110,16 +110,16 @@ importers:
 
   packages/openrouter:
     dependencies:
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
-      '@conquext/openai':
+      '@conquext/observa-openai':
         specifier: workspace:*
         version: link:../openai
 
   packages/pg:
     dependencies:
-      '@conquext/core':
+      '@conquext/observa-core':
         specifier: workspace:*
         version: link:../core
       postgres:

@@ -1,4 +1,4 @@
-import type { StorageBackend, UsageEvent, UsageQuery } from '@conquext/core';
+import type { StorageBackend, UsageEvent, UsageQuery } from '@conquext/observa-core';
 
 export interface LokiConfig {
   url: string;

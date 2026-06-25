@@ -1,5 +1,5 @@
 {
-  "name": "@conquext/azure-openai",
+  "name": "@conquext/observa-azure-openai",
   "version": "0.1.0",
   "publishConfig": { "access": "public" },
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@conquext/core": "workspace:*",
-    "@conquext/openai": "workspace:*"
+    "@conquext/observa-core": "workspace:*",
+    "@conquext/observa-openai": "workspace:*"
   }
 }

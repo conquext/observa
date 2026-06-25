@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { PgBackend } from '../src/pg-backend.js';
-import type { UsageEvent } from '@conquext/core';
+import type { UsageEvent } from '@conquext/observa-core';
 
 const makeEvent = (overrides: Partial<UsageEvent> = {}): UsageEvent => ({
   id: '01ARZ3NDEKTSV4RRFFQ69G5FAV',

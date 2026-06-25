@@ -1,5 +1,5 @@
 {
-  "name": "@conquext/pg",
+  "name": "@conquext/observa-pg",
   "version": "0.1.0",
   "publishConfig": { "access": "public" },
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@conquext/core": "workspace:*"
+    "@conquext/observa-core": "workspace:*"
   },
   "peerDependencies": {
     "postgres": ">=3.0.0"

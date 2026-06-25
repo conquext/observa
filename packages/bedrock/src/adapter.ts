@@ -1,5 +1,5 @@
-import { defineAdapter } from '@conquext/core';
-import type { ProviderAdapter } from '@conquext/core';
+import { defineAdapter } from '@conquext/observa-core';
+import type { ProviderAdapter } from '@conquext/observa-core';
 
 interface BedrockResponse {
   $metadata: { httpStatusCode: number };

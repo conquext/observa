@@ -1,5 +1,5 @@
 {
-  "name": "@conquext/anthropic",
+  "name": "@conquext/observa-anthropic",
   "version": "0.1.0",
   "publishConfig": { "access": "public" },
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@conquext/core": "workspace:*"
+    "@conquext/observa-core": "workspace:*"
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.30.0"

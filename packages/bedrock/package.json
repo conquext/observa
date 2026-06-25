@@ -1,5 +1,5 @@
 {
-  "name": "@conquext/bedrock",
+  "name": "@conquext/observa-bedrock",
   "version": "0.1.0",
   "publishConfig": { "access": "public" },
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@conquext/core": "workspace:*"
+    "@conquext/observa-core": "workspace:*"
   },
   "peerDependencies": {
     "@aws-sdk/client-bedrock-runtime": ">=3.0.0"

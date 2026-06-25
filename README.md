@@ -5,13 +5,13 @@ Framework-agnostic TypeScript SDK for tracking AI/LLM token usage, costs, and pe
 ## Quick Start
 
 ```bash
-npm install @conquext/core @conquext/loki @conquext/openai
+npm install @conquext/observa-core @conquext/observa-loki @conquext/observa-openai
 ```
 
 ```typescript
-import { Observatory } from '@conquext/core';
-import { LokiBackend } from '@conquext/loki';
-import { openaiAdapter } from '@conquext/openai';
+import { Observatory } from '@conquext/observa-core';
+import { LokiBackend } from '@conquext/observa-loki';
+import { openaiAdapter } from '@conquext/observa-openai';
 
 const observatory = new Observatory({
   backend: new LokiBackend({ url: 'http://loki:3100' }),
@@ -32,17 +32,17 @@ const result = await ai.chat.completions.create({ model: 'gpt-4o', messages });
 
 | Package | Description |
 |---------|-------------|
-| `@conquext/core` | Core SDK — Observatory class, types, schemas, pricing, budgets |
-| `@conquext/loki` | Loki storage backend + Grafana dashboards |
-| `@conquext/pg` | PostgreSQL storage backend + dashboards |
-| `@conquext/clickhouse` | ClickHouse storage backend + dashboards |
-| `@conquext/openai` | OpenAI provider adapter |
-| `@conquext/anthropic` | Anthropic provider adapter |
-| `@conquext/google` | Google Gemini provider adapter |
-| `@conquext/bedrock` | AWS Bedrock provider adapter |
-| `@conquext/azure-openai` | Azure OpenAI provider adapter |
-| `@conquext/openrouter` | OpenRouter provider adapter |
-| `@conquext/cli` | CLI for dashboard management |
+| `@conquext/observa-core` | Core SDK — Observatory class, types, schemas, pricing, budgets |
+| `@conquext/observa-loki` | Loki storage backend + Grafana dashboards |
+| `@conquext/observa-pg` | PostgreSQL storage backend + dashboards |
+| `@conquext/observa-clickhouse` | ClickHouse storage backend + dashboards |
+| `@conquext/observa-openai` | OpenAI provider adapter |
+| `@conquext/observa-anthropic` | Anthropic provider adapter |
+| `@conquext/observa-google` | Google Gemini provider adapter |
+| `@conquext/observa-bedrock` | AWS Bedrock provider adapter |
+| `@conquext/observa-azure-openai` | Azure OpenAI provider adapter |
+| `@conquext/observa-openrouter` | OpenRouter provider adapter |
+| `@conquext/observa-cli` | CLI for dashboard management |
 
 ## License
 

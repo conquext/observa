@@ -1,5 +1,5 @@
 {
-  "name": "@conquext/clickhouse",
+  "name": "@conquext/observa-clickhouse",
   "version": "0.1.0",
   "publishConfig": { "access": "public" },
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@conquext/core": "workspace:*"
+    "@conquext/observa-core": "workspace:*"
   },
   "peerDependencies": {
     "@clickhouse/client": ">=1.0.0"

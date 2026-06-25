@@ -1,5 +1,5 @@
 {
-  "name": "@conquext/openai",
+  "name": "@conquext/observa-openai",
   "version": "0.1.0",
   "publishConfig": { "access": "public" },
   "type": "module",
@@ -18,7 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@conquext/core": "workspace:*"
+    "@conquext/observa-core": "workspace:*"
   },
   "peerDependencies": {
     "openai": ">=4.0.0"

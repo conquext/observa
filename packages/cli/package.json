@@ -1,5 +1,5 @@
 {
-  "name": "@conquext/cli",
+  "name": "@conquext/observa-cli",
   "version": "0.1.0",
   "publishConfig": { "access": "public" },
   "type": "module",
@@ -7,7 +7,7 @@
   "files": ["dist"],
   "scripts": { "build": "tsup", "typecheck": "tsc --noEmit", "test": "vitest run" },
   "dependencies": {
-    "@conquext/core": "workspace:*",
+    "@conquext/observa-core": "workspace:*",
     "commander": "^12.0.0"
   }
 }

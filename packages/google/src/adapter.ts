@@ -1,5 +1,5 @@
-import { createTrackedStream, defineAdapter } from '@conquext/core';
-import type { ProviderAdapter } from '@conquext/core';
+import { createTrackedStream, defineAdapter } from '@conquext/observa-core';
+import type { ProviderAdapter } from '@conquext/observa-core';
 
 interface GeminiResponse {
   candidates: unknown[];
