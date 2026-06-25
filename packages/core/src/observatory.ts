@@ -13,7 +13,6 @@ import { UsageEventInputSchema } from './schemas.js';
 import { PricingEngine } from './pricing.js';
 import { BatchProcessor } from './batch.js';
 import { ContextManager } from './context.js';
-import { NoopObservatory } from './noop.js';
 
 export class Observatory {
   private readonly backend: StorageBackend;
@@ -134,7 +133,7 @@ export class Observatory {
     const obs = this;
     return (req: unknown, _res: unknown, next: () => void) => {
       const ctx = opts.extractContext(req);
-      ContextManager.run(ctx, next);
+      return ContextManager.run(ctx, next);
     };
   }
 
