@@ -41,3 +41,6 @@ export {
 export { BudgetExhaustedError } from "./errors.js";
 
 export { PricingEngine } from "./pricing.js";
+
+export { MemoryBackend } from "./memory-backend.js";
+export { BatchProcessor, DEFAULT_BATCH_CONFIG } from "./batch.js";
