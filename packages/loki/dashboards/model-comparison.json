@@ -1,0 +1,152 @@
+{
+  "__inputs": [
+    { "name": "DS_OBSERVATORY", "label": "Observatory (Loki)", "type": "datasource", "pluginId": "loki" }
+  ],
+  "title": "Observatory — Model Comparison",
+  "uid": "observatory-model-comparison",
+  "tags": ["observatory", "ai", "llm"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      { "name": "provider", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, provider)", "multi": true, "includeAll": true },
+      { "name": "model", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", provider=~\"$provider\"}, model)", "multi": true, "includeAll": true },
+      { "name": "team", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, team)", "multi": true, "includeAll": true },
+      { "name": "user_id", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", team=~\"$team\"}, user_id)", "multi": true, "includeAll": true }
+    ]
+  },
+  "panels": [
+    {
+      "title": "Cost vs Latency by Model",
+      "type": "scatter",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 0 },
+      "targets": [{
+        "expr": "sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", status=\"success\"} | json | unwrap cost [$__range])) / quantile_over_time(0.95, {job=\"observatory\", provider=~\"$provider\", model=~\"$model\", status=\"success\"} | json | unwrap latency_ms [$__range])",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": {
+        "overrides": [{
+          "matcher": { "id": "byName", "options": "Value" },
+          "properties": [{ "id": "unit", "value": "currencyUSD" }]
+        }]
+      }
+    },
+    {
+      "title": "Average Cost per Call",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 10 },
+      "targets": [{
+        "expr": "sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [$__range])) / sum by (model) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Average Latency (p95)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 10 },
+      "targets": [{
+        "expr": "quantile_over_time(0.95, {job=\"observatory\", provider=~\"$provider\", model=~\"$model\", status=\"success\"} | json | unwrap latency_ms [$__range]) by (model)",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "ms" } }
+    },
+    {
+      "title": "Total Calls",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 10 },
+      "targets": [{
+        "expr": "sum by (model) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "Model Performance Matrix",
+      "type": "table",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [$__range]))",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "cost"
+        },
+        {
+          "expr": "sum by (model) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__range]))",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "calls"
+        },
+        {
+          "expr": "quantile_over_time(0.95, {job=\"observatory\", provider=~\"$provider\", model=~\"$model\", status=\"success\"} | json | unwrap latency_ms [$__range]) by (model)",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "latency"
+        },
+        {
+          "expr": "sum by (model) (count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\"} [$__range])) / sum by (model) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__range]))",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "error_rate"
+        },
+        {
+          "expr": "sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap total_tokens [$__range]))",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "tokens"
+        }
+      ],
+      "transformations": [
+        { "id": "merge", "options": {} },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": { "model": 0, "calls": 1, "cost": 2, "latency": 3, "error_rate": 4, "tokens": 5 },
+            "renameByName": {
+              "calls": "Total Calls",
+              "cost": "Total Cost",
+              "latency": "Latency p95",
+              "error_rate": "Error Rate",
+              "tokens": "Total Tokens"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Total Cost" },
+            "properties": [{ "id": "unit", "value": "currencyUSD" }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Latency p95" },
+            "properties": [{ "id": "unit", "value": "ms" }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Error Rate" },
+            "properties": [{ "id": "unit", "value": "percentunit" }]
+          }
+        ]
+      }
+    },
+    {
+      "title": "Cost Efficiency (Cost per 1K Tokens)",
+      "type": "bar",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "targets": [{
+        "expr": "sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [$__range])) / (sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap total_tokens [$__range])) / 1000)",
+        "legendFormat": "{{model}}",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Speed Efficiency (Tokens per Second)",
+      "type": "bar",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "targets": [{
+        "expr": "sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", status=\"success\"} | json | unwrap output_tokens [$__range])) / (sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", status=\"success\"} | json | unwrap latency_ms [$__range])) / 1000)",
+        "legendFormat": "{{model}}",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 2 } }
+    }
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "__inputs": [
+    { "name": "DS_OBSERVATORY", "label": "Observatory (Loki)", "type": "datasource", "pluginId": "loki" }
+  ],
+  "title": "Observatory — Forecasting",
+  "uid": "observatory-forecasting",
+  "tags": ["observatory", "ai", "llm"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      { "name": "provider", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, provider)", "multi": true, "includeAll": true },
+      { "name": "model", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", provider=~\"$provider\"}, model)", "multi": true, "includeAll": true },
+      { "name": "team", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, team)", "multi": true, "includeAll": true },
+      { "name": "user_id", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", team=~\"$team\"}, user_id)", "multi": true, "includeAll": true }
+    ]
+  },
+  "panels": [
+    {
+      "title": "Projected Monthly Spend",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "targets": [{
+        "expr": "sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [7d])) / 7 * 30",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": 0, "color": "green" },
+              { "value": 1000, "color": "yellow" },
+              { "value": 5000, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Daily Average (Last 7d)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "targets": [{
+        "expr": "sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [7d])) / 7",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Growth Rate (7d vs 30d)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+      "targets": [{
+        "expr": "(sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [7d])) / 7 - sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [30d])) / 30) / (sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [30d])) / 30)",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": -0.2, "color": "green" },
+              { "value": 0, "color": "yellow" },
+              { "value": 0.2, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Daily Spend Trend with 7-Day Moving Average",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "expr": "sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [24h]))",
+          "legendFormat": "Daily Spend",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "A"
+        },
+        {
+          "expr": "avg_over_time(sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [24h])) [7d])",
+          "legendFormat": "7-Day Moving Average",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "B"
+        },
+        {
+          "expr": "avg_over_time(sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [24h])) [30d])",
+          "legendFormat": "30-Day Moving Average",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Spend Forecast by Provider (Next 30d)",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 16 },
+      "targets": [{
+        "expr": "sum by (provider) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [7d])) / 7 * 30",
+        "legendFormat": "{{provider}} (projected)",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Spend Forecast by Team (Next 30d)",
+      "type": "timeseries",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 16 },
+      "targets": [{
+        "expr": "sum by (team) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [7d])) / 7 * 30",
+        "legendFormat": "{{team}} (projected)",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Token Volume Trend",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "targets": [
+        {
+          "expr": "sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap total_tokens [24h]))",
+          "legendFormat": "Daily Tokens",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "A"
+        },
+        {
+          "expr": "avg_over_time(sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap total_tokens [24h])) [7d])",
+          "legendFormat": "7-Day Average",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "Call Volume Trend",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [24h]))",
+          "legendFormat": "Daily Calls",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "A"
+        },
+        {
+          "expr": "avg_over_time(sum(count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [24h])) [7d])",
+          "legendFormat": "7-Day Average",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" } }
+    },
+    {
+      "title": "Projected Monthly Cost by Model",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 34 },
+      "targets": [{
+        "expr": "sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [7d])) / 7 * 30",
+        "datasource": "${DS_OBSERVATORY}",
+        "refId": "A"
+      }],
+      "transformations": [{
+        "id": "sortBy",
+        "options": { "fields": {}, "sort": [{ "field": "Value", "desc": true }] }
+      }],
+      "fieldConfig": {
+        "overrides": [{
+          "matcher": { "id": "byName", "options": "Value" },
+          "properties": [
+            { "id": "unit", "value": "currencyUSD" },
+            { "id": "custom.displayMode", "value": "color-background" },
+            { "id": "thresholds", "value": { "mode": "absolute", "steps": [{ "value": 0, "color": "green" }, { "value": 500, "color": "yellow" }, { "value": 2000, "color": "red" }] } }
+          ]
+        }]
+      }
+    },
+    {
+      "title": "Cost Trend Comparison (Current vs Previous Period)",
+      "type": "bargauge",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 34 },
+      "targets": [
+        {
+          "expr": "sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [7d]))",
+          "legendFormat": "Last 7 Days",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [7d] offset 7d))",
+          "legendFormat": "Previous 7 Days",
+          "datasource": "${DS_OBSERVATORY}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    }
+  ]
+}

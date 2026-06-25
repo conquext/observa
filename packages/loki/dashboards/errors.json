@@ -1,0 +1,104 @@
+{
+  "__inputs": [
+    { "name": "DS_OBSERVATORY", "label": "Observatory (Loki)", "type": "datasource", "pluginId": "loki" }
+  ],
+  "title": "Observatory — Errors",
+  "uid": "observatory-errors",
+  "tags": ["observatory", "ai", "llm"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      { "name": "provider", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, provider)", "multi": true, "includeAll": true },
+      { "name": "model", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", provider=~\"$provider\"}, model)", "multi": true, "includeAll": true },
+      { "name": "team", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, team)", "multi": true, "includeAll": true },
+      { "name": "user_id", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", team=~\"$team\"}, user_id)", "multi": true, "includeAll": true }
+    ]
+  },
+  "panels": [
+    {
+      "title": "Error Rate",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 0, "y": 0 },
+      "targets": [{
+        "expr": "sum(count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\"} [$__range])) / sum(count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "thresholds": { "steps": [{ "value": 0, "color": "green" }, { "value": 0.05, "color": "yellow" }, { "value": 0.1, "color": "red" }] } } }
+    },
+    {
+      "title": "Total Errors",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 8, "y": 0 },
+      "targets": [{
+        "expr": "sum(count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\"} [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "value": 0, "color": "green" }, { "value": 10, "color": "yellow" }, { "value": 50, "color": "red" }] } } }
+    },
+    {
+      "title": "Errors in Last Hour",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 0 },
+      "targets": [{
+        "expr": "sum(count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\"} [1h]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "value": 0, "color": "green" }, { "value": 5, "color": "yellow" }, { "value": 20, "color": "red" }] } } }
+    },
+    {
+      "title": "Error Rate by Provider",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [{
+        "expr": "sum by (provider) (count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\"} [$__interval])) / sum by (provider) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__interval]))",
+        "legendFormat": "{{provider}}",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0 } }
+    },
+    {
+      "title": "Error Rate by Model",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [{
+        "expr": "sum by (model) (count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\"} [$__interval])) / sum by (model) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__interval]))",
+        "legendFormat": "{{model}}",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0 } }
+    },
+    {
+      "title": "Error Messages",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 12 },
+      "targets": [{
+        "expr": "{job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\"} | json | line_format \"{{.timestamp}} | {{.provider}}/{{.model}} | {{.error}}\"",
+        "datasource": "${DS_OBSERVATORY}"
+      }]
+    },
+    {
+      "title": "Error Count by Error Message",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "targets": [{
+        "expr": "sum by (error) (count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\"} | json [$__range]))",
+        "datasource": "${DS_OBSERVATORY}",
+        "refId": "A"
+      }],
+      "transformations": [{
+        "id": "sortBy",
+        "options": { "fields": {}, "sort": [{ "field": "Value", "desc": true }] }
+      }]
+    },
+    {
+      "title": "Errors by Team",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "targets": [{
+        "expr": "sum by (team) (count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }]
+    }
+  ]
+}

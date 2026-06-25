@@ -1,0 +1,90 @@
+{
+  "__inputs": [
+    { "name": "DS_OBSERVATORY", "label": "Observatory (Loki)", "type": "datasource", "pluginId": "loki" }
+  ],
+  "title": "Observatory — Overview",
+  "uid": "observatory-overview",
+  "tags": ["observatory", "ai", "llm"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      { "name": "provider", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, provider)", "multi": true, "includeAll": true },
+      { "name": "model", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", provider=~\"$provider\"}, model)", "multi": true, "includeAll": true },
+      { "name": "team", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, team)", "multi": true, "includeAll": true },
+      { "name": "user_id", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", team=~\"$team\"}, user_id)", "multi": true, "includeAll": true }
+    ]
+  },
+  "panels": [
+    {
+      "title": "Total Spend",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [{
+        "expr": "sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Total Tokens",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [{
+        "expr": "sum(sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap total_tokens [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }]
+    },
+    {
+      "title": "Total Calls",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [{
+        "expr": "sum(count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }]
+    },
+    {
+      "title": "Error Rate",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "targets": [{
+        "expr": "sum(count_over_time({job=\"observatory\", status=\"error\", provider=~\"$provider\"} [$__range])) / sum(count_over_time({job=\"observatory\", provider=~\"$provider\"} [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "thresholds": { "steps": [{ "value": 0, "color": "green" }, { "value": 0.05, "color": "yellow" }, { "value": 0.1, "color": "red" }] } } }
+    },
+    {
+      "title": "Spend Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+      "targets": [{
+        "expr": "sum by (provider) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [$__interval]))",
+        "legendFormat": "{{provider}}",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Calls Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [{
+        "expr": "sum by (model) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__interval]))",
+        "legendFormat": "{{model}}",
+        "datasource": "${DS_OBSERVATORY}"
+      }]
+    },
+    {
+      "title": "Latency p95",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [{
+        "expr": "quantile_over_time(0.95, {job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap latency_ms [$__interval]) by (model)",
+        "legendFormat": "{{model}} p95",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "ms" } }
+    }
+  ]
+}

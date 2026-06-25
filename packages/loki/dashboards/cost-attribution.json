@@ -1,0 +1,120 @@
+{
+  "__inputs": [
+    { "name": "DS_OBSERVATORY", "label": "Observatory (Loki)", "type": "datasource", "pluginId": "loki" }
+  ],
+  "title": "Observatory — Cost Attribution",
+  "uid": "observatory-cost-attribution",
+  "tags": ["observatory", "ai", "llm"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "templating": {
+    "list": [
+      { "name": "provider", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, provider)", "multi": true, "includeAll": true },
+      { "name": "model", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", provider=~\"$provider\"}, model)", "multi": true, "includeAll": true },
+      { "name": "team", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\"}, team)", "multi": true, "includeAll": true },
+      { "name": "user_id", "type": "query", "datasource": "${DS_OBSERVATORY}", "query": "label_values({job=\"observatory\", team=~\"$team\"}, user_id)", "multi": true, "includeAll": true }
+    ]
+  },
+  "panels": [
+    {
+      "title": "Top 10 Users by Spend",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 0 },
+      "targets": [{
+        "expr": "topk(10, sum by (user_id) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [$__range])))",
+        "datasource": "${DS_OBSERVATORY}",
+        "refId": "A"
+      }],
+      "transformations": [{
+        "id": "sortBy",
+        "options": { "fields": {}, "sort": [{ "field": "Value", "desc": true }] }
+      }],
+      "fieldConfig": {
+        "overrides": [{
+          "matcher": { "id": "byName", "options": "Value" },
+          "properties": [{ "id": "unit", "value": "currencyUSD" }]
+        }]
+      }
+    },
+    {
+      "title": "Top 10 Tasks by Spend",
+      "type": "table",
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 0 },
+      "targets": [{
+        "expr": "topk(10, sum by (task) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [$__range])))",
+        "datasource": "${DS_OBSERVATORY}",
+        "refId": "A"
+      }],
+      "transformations": [{
+        "id": "sortBy",
+        "options": { "fields": {}, "sort": [{ "field": "Value", "desc": true }] }
+      }],
+      "fieldConfig": {
+        "overrides": [{
+          "matcher": { "id": "byName", "options": "Value" },
+          "properties": [{ "id": "unit", "value": "currencyUSD" }]
+        }]
+      }
+    },
+    {
+      "title": "Cost per Conversation",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 10 },
+      "targets": [{
+        "expr": "sum by (conversation_id) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | conversation_id != \"\" | unwrap cost [$__interval])) / count by (conversation_id) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | conversation_id != \"\" [$__interval]))",
+        "legendFormat": "{{conversation_id}}",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "title": "Spend by User (Heatmap)",
+      "type": "heatmap",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
+      "targets": [{
+        "expr": "sum by (user_id) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [$__interval]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }]
+    },
+    {
+      "title": "Cost Distribution by Team",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
+      "targets": [{
+        "expr": "sum by (team) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\"} | json | unwrap cost [$__range]))",
+        "datasource": "${DS_OBSERVATORY}"
+      }]
+    },
+    {
+      "title": "Average Cost per Call by Model",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "targets": [{
+        "expr": "sum by (model) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} | json | unwrap cost [$__range])) / sum by (model) (count_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\"} [$__range]))",
+        "datasource": "${DS_OBSERVATORY}",
+        "refId": "A"
+      }],
+      "transformations": [{
+        "id": "sortBy",
+        "options": { "fields": {}, "sort": [{ "field": "Value", "desc": true }] }
+      }],
+      "fieldConfig": {
+        "overrides": [{
+          "matcher": { "id": "byName", "options": "Value" },
+          "properties": [{ "id": "unit", "value": "currencyUSD" }]
+        }]
+      }
+    },
+    {
+      "title": "User Spend Over Time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "targets": [{
+        "expr": "sum by (user_id) (sum_over_time({job=\"observatory\", provider=~\"$provider\", model=~\"$model\", team=~\"$team\", user_id=~\"$user_id\"} | json | unwrap cost [$__interval]))",
+        "legendFormat": "{{user_id}}",
+        "datasource": "${DS_OBSERVATORY}"
+      }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    }
+  ]
+}
