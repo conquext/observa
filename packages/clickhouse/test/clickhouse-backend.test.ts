@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ClickHouseBackend } from '../src/clickhouse-backend.js';
-import type { UsageEvent } from '@observatory/core';
+import type { UsageEvent } from '@conquext/core';
 
 const makeEvent = (): UsageEvent => ({
   id: '01ARZ3NDEKTSV4RRFFQ69G5FAV',

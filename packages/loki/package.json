@@ -1,5 +1,5 @@
 {
-  "name": "@observatory/loki",
+  "name": "@conquext/loki",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -17,6 +17,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@observatory/core": "workspace:*"
+    "@conquext/core": "workspace:*"
   }
 }

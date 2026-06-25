@@ -5,13 +5,13 @@ Framework-agnostic TypeScript SDK for tracking AI/LLM token usage, costs, and pe
 ## Quick Start
 
 ```bash
-npm install @observatory/core @observatory/loki @observatory/openai
+npm install @conquext/core @conquext/loki @conquext/openai
 ```
 
 ```typescript
-import { Observatory } from '@observatory/core';
-import { LokiBackend } from '@observatory/loki';
-import { openaiAdapter } from '@observatory/openai';
+import { Observatory } from '@conquext/core';
+import { LokiBackend } from '@conquext/loki';
+import { openaiAdapter } from '@conquext/openai';
 
 const observatory = new Observatory({
   backend: new LokiBackend({ url: 'http://loki:3100' }),
@@ -32,17 +32,17 @@ const result = await ai.chat.completions.create({ model: 'gpt-4o', messages });
 
 | Package | Description |
 |---------|-------------|
-| `@observatory/core` | Core SDK — Observatory class, types, schemas, pricing, budgets |
-| `@observatory/loki` | Loki storage backend + Grafana dashboards |
-| `@observatory/pg` | PostgreSQL storage backend + dashboards |
-| `@observatory/clickhouse` | ClickHouse storage backend + dashboards |
-| `@observatory/openai` | OpenAI provider adapter |
-| `@observatory/anthropic` | Anthropic provider adapter |
-| `@observatory/google` | Google Gemini provider adapter |
-| `@observatory/bedrock` | AWS Bedrock provider adapter |
-| `@observatory/azure-openai` | Azure OpenAI provider adapter |
-| `@observatory/openrouter` | OpenRouter provider adapter |
-| `@observatory/cli` | CLI for dashboard management |
+| `@conquext/core` | Core SDK — Observatory class, types, schemas, pricing, budgets |
+| `@conquext/loki` | Loki storage backend + Grafana dashboards |
+| `@conquext/pg` | PostgreSQL storage backend + dashboards |
+| `@conquext/clickhouse` | ClickHouse storage backend + dashboards |
+| `@conquext/openai` | OpenAI provider adapter |
+| `@conquext/anthropic` | Anthropic provider adapter |
+| `@conquext/google` | Google Gemini provider adapter |
+| `@conquext/bedrock` | AWS Bedrock provider adapter |
+| `@conquext/azure-openai` | Azure OpenAI provider adapter |
+| `@conquext/openrouter` | OpenRouter provider adapter |
+| `@conquext/cli` | CLI for dashboard management |
 
 ## License
 

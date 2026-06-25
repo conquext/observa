@@ -1,12 +1,12 @@
 {
-  "name": "@observatory/cli",
+  "name": "@conquext/cli",
   "version": "0.1.0",
   "type": "module",
   "bin": { "observatory": "dist/index.js" },
   "files": ["dist"],
   "scripts": { "build": "tsup", "typecheck": "tsc --noEmit", "test": "vitest run" },
   "dependencies": {
-    "@observatory/core": "workspace:*",
+    "@conquext/core": "workspace:*",
     "commander": "^12.0.0"
   }
 }

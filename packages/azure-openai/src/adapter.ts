@@ -1,5 +1,5 @@
-import { openaiAdapter } from '@observatory/openai';
-import type { ProviderAdapter } from '@observatory/core';
+import { openaiAdapter } from '@conquext/openai';
+import type { ProviderAdapter } from '@conquext/core';
 
 export const azureOpenaiAdapter: ProviderAdapter = {
   ...openaiAdapter,

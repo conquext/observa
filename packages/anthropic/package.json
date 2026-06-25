@@ -1,5 +1,5 @@
 {
-  "name": "@observatory/anthropic",
+  "name": "@conquext/anthropic",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -17,7 +17,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@observatory/core": "workspace:*"
+    "@conquext/core": "workspace:*"
   },
   "peerDependencies": {
     "@anthropic-ai/sdk": ">=0.30.0"

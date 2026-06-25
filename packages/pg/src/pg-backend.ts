@@ -1,4 +1,4 @@
-import type { StorageBackend, UsageEvent, UsageQuery } from '@observatory/core';
+import type { StorageBackend, UsageEvent, UsageQuery } from '@conquext/core';
 
 export interface PgConfig {
   connectionString: string;

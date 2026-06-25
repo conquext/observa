@@ -1,5 +1,5 @@
 {
-  "name": "@observatory/azure-openai",
+  "name": "@conquext/azure-openai",
   "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
@@ -17,7 +17,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@observatory/core": "workspace:*",
-    "@observatory/openai": "workspace:*"
+    "@conquext/core": "workspace:*",
+    "@conquext/openai": "workspace:*"
   }
 }

@@ -35,16 +35,16 @@ importers:
       '@anthropic-ai/sdk':
         specifier: '>=0.30.0'
         version: 0.106.0(zod@3.25.76)
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
 
   packages/azure-openai:
     dependencies:
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
-      '@observatory/openai':
+      '@conquext/openai':
         specifier: workspace:*
         version: link:../openai
 
@@ -53,13 +53,13 @@ importers:
       '@aws-sdk/client-bedrock-runtime':
         specifier: '>=3.0.0'
         version: 3.1075.0
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
 
   packages/cli:
     dependencies:
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
       commander:
@@ -71,7 +71,7 @@ importers:
       '@clickhouse/client':
         specifier: '>=1.0.0'
         version: 1.22.0
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
 
@@ -86,22 +86,22 @@ importers:
 
   packages/google:
     dependencies:
+      '@conquext/core':
+        specifier: workspace:*
+        version: link:../core
       '@google/generative-ai':
         specifier: '>=0.1.0'
         version: 0.24.1
-      '@observatory/core':
-        specifier: workspace:*
-        version: link:../core
 
   packages/loki:
     dependencies:
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
 
   packages/openai:
     dependencies:
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
       openai:
@@ -110,16 +110,16 @@ importers:
 
   packages/openrouter:
     dependencies:
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
-      '@observatory/openai':
+      '@conquext/openai':
         specifier: workspace:*
         version: link:../openai
 
   packages/pg:
     dependencies:
-      '@observatory/core':
+      '@conquext/core':
         specifier: workspace:*
         version: link:../core
       postgres:

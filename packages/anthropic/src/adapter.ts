@@ -1,5 +1,5 @@
-import { createTrackedStream, defineAdapter } from '@observatory/core';
-import type { ExtractedUsage, ProviderAdapter } from '@observatory/core';
+import { createTrackedStream, defineAdapter } from '@conquext/core';
+import type { ExtractedUsage, ProviderAdapter } from '@conquext/core';
 
 interface AnthropicUsage {
   input_tokens: number;

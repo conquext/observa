@@ -2,7 +2,7 @@ import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 export async function exportDashboards(backend: string, outdir: string): Promise<void> {
-  const dashboardsDir = resolve(`node_modules/@observatory/${backend}/dashboards`);
+  const dashboardsDir = resolve(`node_modules/@conquext/${backend}/dashboards`);
   const files = await readdir(dashboardsDir);
   const jsonFiles = files.filter((f) => f.endsWith('.json'));
 
@@ -22,7 +22,7 @@ export async function importDashboards(
   grafanaUrl: string,
   apiKey: string,
 ): Promise<void> {
-  const dashboardsDir = resolve(`node_modules/@observatory/${backend}/dashboards`);
+  const dashboardsDir = resolve(`node_modules/@conquext/${backend}/dashboards`);
   const files = await readdir(dashboardsDir);
   const jsonFiles = files.filter((f) => f.endsWith('.json'));
 
