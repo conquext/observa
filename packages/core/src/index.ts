@@ -50,5 +50,8 @@ export { defineAdapter, createTrackedStream } from "./adapter.js";
 
 export { CallbackDispatcher } from "./callbacks.js";
 
+export { BudgetEngine } from "./budget.js";
+export type { BudgetCheckResult } from "./budget.js";
+
 export { Observatory } from "./observatory.js";
 export { NoopObservatory } from "./noop.js";

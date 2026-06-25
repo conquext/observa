@@ -14,6 +14,7 @@ import { PricingEngine } from './pricing.js';
 import { BatchProcessor } from './batch.js';
 import { ContextManager } from './context.js';
 import { CallbackDispatcher } from './callbacks.js';
+import { BudgetEngine } from './budget.js';
 
 export class Observatory {
   private readonly backend: StorageBackend;
@@ -22,6 +23,7 @@ export class Observatory {
   private readonly defaultContext?: ObservabilityContext;
   private readonly disabled: boolean;
   private readonly callbacks?: CallbackDispatcher;
+  private readonly budgetEngine?: BudgetEngine;
 
   constructor(config: ObservatoryConfig) {
     this.disabled = config.disabled ?? false;
@@ -30,6 +32,7 @@ export class Observatory {
     this.batch = new BatchProcessor(config.backend, config.batching);
     this.defaultContext = config.defaultContext;
     this.callbacks = config.on ? new CallbackDispatcher(config.on) : undefined;
+    this.budgetEngine = config.budgets ? new BudgetEngine(config.budgets) : undefined;
   }
 
   async record(input: UsageEventInput): Promise<void> {
@@ -53,6 +56,7 @@ export class Observatory {
     };
 
     await this.batch.add(event);
+    this.budgetEngine?.accumulate(event);
     this.callbacks?.dispatch(event);
   }
 
