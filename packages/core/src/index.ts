@@ -47,3 +47,6 @@ export { BatchProcessor, DEFAULT_BATCH_CONFIG } from "./batch.js";
 
 export { ContextManager } from "./context.js";
 export { defineAdapter, createTrackedStream } from "./adapter.js";
+
+export { Observatory } from "./observatory.js";
+export { NoopObservatory } from "./noop.js";
