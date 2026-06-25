@@ -117,7 +117,7 @@ export class Observatory {
         }
 
         // Handle nested objects (e.g., openai.chat.completions.create)
-        if (typeof value === 'object' && value !== null) {
+        if (typeof prop === 'string' && typeof value === 'object' && value !== null) {
           return new Proxy(value as object, makeNestedHandler(obs, adapter, prop));
         }
 
